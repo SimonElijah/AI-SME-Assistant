@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI Chat</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial;
+            background: #0f172a;
+            color: white;
+        }
+
+        .container {
+            display: flex;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: #020617;
+            padding: 15px;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .sidebar h3 {
+            color: #38bdf8;
+        }
+
+        .sidebar a {
+            display: block;
+            color: white;
+            padding: 8px;
+            text-decoration: none;
+            border-radius: 6px;
+        }
+
+        .sidebar a:hover {
+            background: #1e293b;
+        }
+
+        .main {
+            flex: 1;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .chat-box {
+            background: #1e293b;
+            padding: 20px;
+            border-radius: 10px;
+            height: 400px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+        }
+
+        .user {
+            color: #38bdf8;
+            text-align: right;
+        }
+
+        .ai {
+            color: #22c55e;
+            text-align: left;
+        }
+
+        input {
+            width: 60%;
+            padding: 10px;
+            border-radius: 6px;
+            border: none;
+        }
+
+        button {
+            padding: 10px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            margin: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h3>💬 Chats</h3>
+
+        <a href="/clear_chat">➕ New Chat</a>
+        <a href="/save_chat">💾 Save Chat</a>
+
+        <hr>
+
+        {% for file in chats %}
+            <a href="/load_chat/{{ file }}">{{ file }}</a>
+        {% endfor %}
+
+        <hr>
+
+        <a href="/">🏠 Generator</a>
+        <a href="/image">🎨 Image</a>
+        <a href="/dashboard">📊 Dashboard</a>
+        <a href="/logout">🚪 Logout</a>
+    </div>
+
+    <!-- Main Chat -->
+    <div class="main">
+
+        <h2>AI Chat</h2>
+
+        <div class="chat-box">
+            {% for msg in chat %}
+                {% if msg.role == "user" %}
+                    <p class="user"><b>You:</b> {{ msg.content }}</p>
+                {% else %}
+                    <p class="ai"><b>AI:</b> {{ msg.content }}</p>
+                {% endif %}
+            {% endfor %}
+        </div>
+
+        <form method="post">
+            <input name="message" placeholder="Ask anything..." required>
+            <button type="submit">Send</button>
+        </form>
+
+    </div>
+
+</div>
+
+</body>
+</html>

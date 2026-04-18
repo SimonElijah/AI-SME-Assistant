@@ -1,0 +1,27 @@
+<h2>Dashboard</h2>
+
+<p>Welcome {{ user }}</p>
+
+<a href="/">AI Generator</a> |
+<a href="/image">Image Generator</a> |
+<a href="/logout">Logout</a>
+<a href="/chat">Chat</a>
+
+<h3>Your Text Files</h3>
+{% for file in files %}
+<p>
+{{ file }}
+<a href="/download/{{ file }}">Download</a>
+<a href="/delete/{{ file }}">Delete</a>
+</p>
+{% endfor %}
+
+<h3>Your Images</h3>
+{% for img in images %}
+<p>
+<img src="/static/{{ user }}/{{ img }}" width="200"><br>
+{{ img }}
+<a href="/static/{{ user }}/{{ img }}" download>Download</a>
+<a href="/delete_image/{{ img }}">Delete</a>
+</p>
+{% endfor %}

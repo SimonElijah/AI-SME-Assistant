@@ -1,0 +1,28 @@
+<h2>AI Business + Content Generator</h2>
+
+<p>Welcome {{ user }}</p>
+
+<a href="/dashboard">📊 Dashboard</a> |
+<a href="/image">🎨 Image Generator</a> |
+<a href="/logout">🚪 Logout</a>
+<a href="/chat">Chat</a>
+
+<br><br>
+
+<form method="post">
+Business Type:<br>
+<input name="business"><br><br>
+
+Audience:<br>
+<input name="audience"><br><br>
+
+Platform:<br>
+<input name="platform"><br><br>
+
+<input type="submit" value="Generate">
+</form>
+
+{% if result %}
+<h3>AI Result:</h3>
+<p>{{ result }}</p>
+{% endif %}
