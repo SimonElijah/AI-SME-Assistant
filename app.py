@@ -246,6 +246,14 @@ def delete_image(filename):
 # =========================
 # IMAGE GENERATOR
 # =========================
+def enhance_prompt(user_input):
+    return f"""
+Create a high-quality, detailed image based on this idea:
+
+{user_input}
+
+Make it realistic, cinematic lighting, ultra-detailed, 4k, professional photography, sharp focus.
+"""
 
 @app.route("/image", methods=["GET","POST"])
 @login_required
@@ -256,7 +264,8 @@ def image_generator():
 
     if request.method == "POST":
 
-        prompt = request.form.get("prompt")
+        user_input = request.form.get("prompt")
+        prompt = enhance_prompt(user_input)
 
         # ✅ Check empty prompt
         if not prompt:
@@ -288,6 +297,7 @@ def image_generator():
             image_url = "/" + file_path
 
         except Exception as e:
+            print("IMAGE ERROR:", e)   # 👈 shows in Render logs
             error = str(e)
 
     return render_template("image.html", image_url=image_url, error=error)
