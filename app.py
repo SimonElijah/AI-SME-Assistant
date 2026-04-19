@@ -281,7 +281,6 @@ def image_generator():
                 size="1024x1024"
             )
 
-            # ✅ SAFE USER ID (fix crash)
             user_id = current_user.id if current_user.is_authenticated else "guest"
 
             folder = f"static/{user_id}"
@@ -290,9 +289,8 @@ def image_generator():
             timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
             file_path = f"{folder}/image_{timestamp}.png"
 
-            # ✅ SAFE IMAGE EXTRACTION (fix crash)
             if not result.data or not hasattr(result.data[0], "b64_json"):
-                return "IMAGE ERROR: No image returned from API"
+                return "IMAGE ERROR: No image returned"
 
             image_bytes = base64.b64decode(result.data[0].b64_json)
 
@@ -302,8 +300,45 @@ def image_generator():
             image_url = "/" + file_path
 
         except Exception as e:
-            print("IMAGE ERROR:", e)
-            return f"IMAGE ERROR: {str(e)}"
+            error_msg = str(e)
+            print("IMAGE ERROR:", error_msg)
+
+            # 🔥 Handle moderation block
+            if "moderation_blocked" in error_msg:
+
+                try:
+                    safe_prompt = f"A safe, non-explicit version of: {user_input}"
+
+                    result = client.images.generate(
+                        model="gpt-image-1",
+                        prompt=safe_prompt,
+                        size="1024x1024"
+                    )
+
+                    user_id = current_user.id if current_user.is_authenticated else "guest"
+                    folder = f"static/{user_id}"
+                    os.makedirs(folder, exist_ok=True)
+
+                    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+                    file_path = f"{folder}/image_{timestamp}.png"
+
+                    image_bytes = base64.b64decode(result.data[0].b64_json)
+
+                    with open(file_path, "wb") as f:
+                        f.write(image_bytes)
+
+                    image_url = "/" + file_path
+
+                    return render_template(
+                        "image.html",
+                        image_url=image_url,
+                        error="Prompt adjusted for safety"
+                    )
+
+                except Exception as e2:
+                    return f"IMAGE ERROR AFTER RETRY: {str(e2)}"
+
+            return f"IMAGE ERROR: {error_msg}"
 
     return render_template("image.html", image_url=image_url, error=error)
 
