@@ -78,6 +78,10 @@ def load_chat_file(username, filename):
 app = Flask(__name__)
 app.secret_key = "supersecretkey"
 
+@app.errorhandler(500)
+def internal_error(e):
+   return f"SERVER ERROR: {str(e)}", 500
+
 # =========================
 # LOGIN SETUP
 # =========================
@@ -256,7 +260,7 @@ Make it realistic, cinematic lighting, ultra-detailed, 4k, professional photogra
 """
 
 @app.route("/image", methods=["GET","POST"])
-@login_required
+#@login_required
 def image_generator():
 
     image_url = None
