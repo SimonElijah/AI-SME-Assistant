@@ -260,7 +260,6 @@ Make it realistic, cinematic lighting, ultra-detailed, 4k, professional photogra
 """
 
 @app.route("/image", methods=["GET","POST"])
-# @login_required
 def image_generator():
 
     image_url = None
@@ -271,8 +270,7 @@ def image_generator():
         user_input = request.form.get("prompt")
 
         if not user_input:
-            error = "Please enter a prompt"
-            return render_template("image.html", image_url=image_url, error=error)
+            return render_template("image.html", error="Please enter a prompt")
 
         prompt = enhance_prompt(user_input)
 
@@ -283,15 +281,20 @@ def image_generator():
                 size="1024x1024"
             )
 
+            # ✅ SAFE USER ID (fix crash)
             user_id = current_user.id if current_user.is_authenticated else "guest"
+
             folder = f"static/{user_id}"
             os.makedirs(folder, exist_ok=True)
 
             timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
             file_path = f"{folder}/image_{timestamp}.png"
 
-            image_base64 = result.data[0].b64_json
-            image_bytes = base64.b64decode(image_base64)
+            # ✅ SAFE IMAGE EXTRACTION (fix crash)
+            if not result.data or not hasattr(result.data[0], "b64_json"):
+                return "IMAGE ERROR: No image returned from API"
+
+            image_bytes = base64.b64decode(result.data[0].b64_json)
 
             with open(file_path, "wb") as f:
                 f.write(image_bytes)
