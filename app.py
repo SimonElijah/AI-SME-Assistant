@@ -260,7 +260,7 @@ Make it realistic, cinematic lighting, ultra-detailed, 4k, professional photogra
 """
 
 @app.route("/image", methods=["GET","POST"])
-#@login_required
+# @login_required
 def image_generator():
 
     image_url = None
@@ -269,12 +269,12 @@ def image_generator():
     if request.method == "POST":
 
         user_input = request.form.get("prompt")
-        prompt = enhance_prompt(user_input)
 
-        # ✅ Check empty prompt
-        if not prompt:
+        if not user_input:
             error = "Please enter a prompt"
             return render_template("image.html", image_url=image_url, error=error)
+
+        prompt = enhance_prompt(user_input)
 
         try:
             result = client.images.generate(
@@ -283,13 +283,11 @@ def image_generator():
                 size="1024x1024"
             )
 
-            # Save image
-            folder = f"static/{current_user.id}"
+            user_id = current_user.id if current_user.is_authenticated else "guest"
+            folder = f"static/{user_id}"
             os.makedirs(folder, exist_ok=True)
 
-            import datetime
             timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-
             file_path = f"{folder}/image_{timestamp}.png"
 
             image_base64 = result.data[0].b64_json
