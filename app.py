@@ -301,8 +301,8 @@ def image_generator():
             image_url = "/" + file_path
 
         except Exception as e:
-            print("IMAGE ERROR:", e)   # 👈 shows in Render logs
-            error = str(e)
+            print("IMAGE ERROR:", e)
+            return f"IMAGE ERROR: {str(e)}"
 
     return render_template("image.html", image_url=image_url, error=error)
 
